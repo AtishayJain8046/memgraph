@@ -1,0 +1,7 @@
+neo4j==5.28.1
+qdrant-client==1.14.2
+anthropic==0.52.0
+openai==1.82.0
+voyageai==0.3.7
+google-genai==2.6.0
+python-dotenv==1.1.0
