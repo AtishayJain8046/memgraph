@@ -18,6 +18,7 @@ Later, at query time, you can choose the right store for the right question.
 import os
 import time
 import uuid
+import importlib.util
 from dotenv import load_dotenv
 from openai import OpenAI
 from neo4j import GraphDatabase
@@ -25,7 +26,15 @@ import voyageai
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct
 
-from extraction_03 import extract_triples
+# Python can't import modules starting with a digit ("03_extraction"),
+# so we use importlib to load it by file path. This avoids needing a
+# duplicate file with a different name.
+_spec = importlib.util.spec_from_file_location(
+    "extraction", os.path.join(os.path.dirname(__file__), "03_extraction.py")
+)
+_module = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_module)
+extract_triples = _module.extract_triples
 
 load_dotenv()
 
