@@ -1,0 +1,10 @@
+# Week 2 dependencies (in addition to Week 1's requirements.txt)
+# Install: pip install -r requirements_week2.txt
+
+streamlit==1.45.1
+anthropic==0.52.0
+neo4j==5.28.1
+qdrant-client==1.14.2
+voyageai==0.3.7
+openai==1.82.0
+python-dotenv==1.1.0
