@@ -1,0 +1,44 @@
+# ─── Secrets ───────────────────────────────────────────────
+.env
+*.env
+!.env.example
+
+# ─── Python ────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+ENV/
+
+# ─── Testing / coverage ────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# ─── Node (presentation generation) ────────────────────────
+node_modules/
+package-lock.json
+
+# ─── Build / generated artifacts ───────────────────────────
+*.pdf
+slide-*.jpg
+slide-*.png
+
+# ─── Personal (not for public repo) ────────────────────────
+resume_linkedin.md
+benchmark_report.js
+
+# ─── Editor / OS ───────────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+.claude/settings.local.json

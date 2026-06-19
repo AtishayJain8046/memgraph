@@ -32,12 +32,44 @@ GROQ_MODEL = "llama-3.3-70b-versatile"
 CONTRADICTION_SYSTEM_PROMPT = """You are a contradiction detector for a personal knowledge graph.
 Your job is to identify when a new statement conflicts with an existing belief or decision.
 
-Important nuances:
-- If someone was UNCERTAIN about X, and now makes a firm DECISION about X, that CONTRADICTS the uncertainty (it resolves it — the old uncertain state is no longer true).
-- If someone REJECTED X, and now says X looks good or should be reconsidered, that CONTRADICTS the rejection.
-- If someone DECIDED X, and now says they should use Y instead of X, that CONTRADICTS the decision.
-- If a new statement AGREES with or REAFFIRMS an existing decision, that is CONSISTENT.
-- Only flag as CONTRADICTS when the new statement genuinely conflicts with — or reverses — the existing position. Do NOT flag unrelated decisions.
+CONTRADICTS — flag these:
+- DECIDED X, now says they should use Y instead of X (direct reversal)
+- DECIDED X, now says X was wrong or a different approach is better (implicit reversal)
+- REJECTED X, now says X looks good or should be reconsidered
+- Was UNCERTAIN about X, now makes a firm decision about X (resolves the uncertainty — the uncertain state is no longer true)
+- Policy reversal: decided on policy A, now says policy B instead (e.g., "remote-first" then "office-first")
+
+CONSISTENT — do NOT flag:
+- Reaffirming or praising an existing decision
+- Adding details or elaborating on a decision
+- Discussing a topic not related to any existing position
+
+UNRELATED — do NOT flag:
+- Hypothetical questions or wondering ("I wonder if X would have been better") — these are NOT reversals
+- Re-evaluating a deferred/uncertain decision ("maybe we should look at X again") — this is consistent with uncertainty, not contradicting it
+- Observations about rejected options ("X has some nice features") without actually proposing to switch
+- Mentioning a technology for a completely different purpose than what was decided
+
+Examples:
+  Existing: "We decided on remote-first as our work policy"
+  New: "We've decided to go back to office-first, remote work isn't productive enough"
+  → CONTRADICTS (policy reversal, confidence 0.95)
+
+  Existing: "We decided to require a take-home project instead of whiteboard interviews"
+  New: "We've decided whiteboard interviews are actually better than take-home projects"
+  → CONTRADICTS (implicit reversal, confidence 0.90)
+
+  Existing: "We are uncertain whether we need PgBouncer"
+  New: "We've realized we definitely need PgBouncer, it's critical"
+  → CONTRADICTS (resolves uncertainty with firm decision, confidence 0.85)
+
+  Existing: "MongoDB was rejected — write latency was 3x higher"
+  New: "I wonder if MongoDB would have been a better choice"
+  → CONSISTENT (hypothetical question, not an actual decision to switch)
+
+  Existing: "TimescaleDB was evaluated but we deferred the decision"
+  New: "Maybe we should re-evaluate TimescaleDB now"
+  → CONSISTENT (revisiting a deferred decision is not contradicting it)
 
 Respond ONLY with valid JSON."""
 
@@ -52,7 +84,7 @@ Respond with JSON only:
   "explanation": "one sentence explanation if CONTRADICTS, else empty string"
 }}"""
 
-CONFIDENCE_THRESHOLD = 0.80
+CONFIDENCE_THRESHOLD = 0.70
 
 
 def retry(max_attempts=3, base_delay=2):
